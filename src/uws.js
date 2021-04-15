@@ -16,6 +16,12 @@
  */
 
 module.exports = (() => {
+	if (process.env.UWS_USE_FALLBACK && JSON.parse(process.env.UWS_USE_FALLBACK.toLowerCase()) == true) {
+		console.warn("Using fallback implementation due to UWS_USE_FALLBACK environment flag being enabled; performance may be degraded.\n\n");
+		const fallback = require("../dist/index");
+		return fallback;
+	}
+
 	try {
 		const uWS = require('../binaries/uws_' + process.platform + '_' + process.arch + '_' + process.versions.modules + '.node');
 		if (process.env.EXPERIMENTAL_FASTCALL) {
