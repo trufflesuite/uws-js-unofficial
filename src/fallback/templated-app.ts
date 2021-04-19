@@ -91,7 +91,7 @@ export default class TemplatedApp implements uWsTemplatedApp {
     arg3?: any,
     arg4?: any
   ) {
-    let host: RecognizedString;
+    let host: RecognizedString | undefined;
     let port: number;
     let options: number;
     let callback: ListenCallback;
@@ -106,7 +106,6 @@ export default class TemplatedApp implements uWsTemplatedApp {
         callback = arg3;
       }
     } else {
-      host = "127.0.0.1";
       port = arg1 as number;
       if (typeof arg2 === "number") {
         options = arg2;

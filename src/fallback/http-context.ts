@@ -121,7 +121,7 @@ export class HttpContext {
   }
 
   private sockets = new Set<Socket>();
-  listen(host: string, port: number, callback: ListenCallback) {
+  listen(host: RecognizedString | undefined, port: number, callback: ListenCallback) {
     this.http = http.createServer(this.handleRequest.bind(this));
     this.http.on("connection", socket => {
       this.http!.once("close", () => {
@@ -129,7 +129,7 @@ export class HttpContext {
       });
     });
     this.http.on("upgrade", this.handleHttpUpgrade.bind(this));
-    this.http.listen({ port, host, exclusive: true }, () => {
+    this.http.listen({ port, host: host?.toString(), exclusive: true }, () => {
       this.closed = false;
       callback(this);
     });
