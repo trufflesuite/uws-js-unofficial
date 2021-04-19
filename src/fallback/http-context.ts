@@ -1,5 +1,5 @@
 import http, { IncomingMessage, ServerResponse } from "http";
-import { Socket } from "net";
+import { Socket, ListenOptions } from "net";
 import { RecognizedString, WebSocketBehavior } from "../../docs/index";
 import InternalWebSocket from "ws";
 
@@ -129,7 +129,13 @@ export class HttpContext {
       });
     });
     this.http.on("upgrade", this.handleHttpUpgrade.bind(this));
-    this.http.listen({ port, host: host?.toString(), exclusive: true }, () => {
+
+    const options: ListenOptions = { port, exclusive: true };
+    if (host) {
+      options.host = host.toString();
+    }
+
+    this.http.listen({ port, exclusive: true }, () => {
       this.closed = false;
       callback(this);
     });
