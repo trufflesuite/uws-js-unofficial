@@ -108,14 +108,14 @@ public:
             length = utf8Value->length();
         } else if (value->IsTypedArray()) {
             Local<ArrayBufferView> arrayBufferView = Local<ArrayBufferView>::Cast(value);
-            ArrayBuffer::Contents contents = arrayBufferView->Buffer()->GetContents();
+            std::shared_ptr<v8::BackingStore> backing = arrayBufferView->Buffer()-> GetBackingStore();
             length = arrayBufferView->ByteLength();
-            data = (char *) contents.Data() + arrayBufferView->ByteOffset();
+            data = (char *) backing->Data() + arrayBufferView->ByteOffset();
         } else if (value->IsArrayBuffer()) {
             Local<ArrayBuffer> arrayBuffer = Local<ArrayBuffer>::Cast(value);
-            ArrayBuffer::Contents contents = arrayBuffer->GetContents();
-            length = contents.ByteLength();
-            data = (char *) contents.Data();
+            std::shared_ptr<v8::BackingStore> backing = arrayBuffer-> GetBackingStore();
+            length = backing->ByteLength();
+            data = (char *) backing->Data();
         } else {
             invalid = true;
         }

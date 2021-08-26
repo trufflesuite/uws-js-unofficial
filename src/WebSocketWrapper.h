@@ -136,7 +136,9 @@ struct WebSocketWrapper {
             std::string_view ip = ws->getRemoteAddress();
 
             /* Todo: we need to pass a copy here */
-            args.GetReturnValue().Set(ArrayBuffer::New(isolate, (void *) ip.data(), ip.length()/*, ArrayBufferCreationMode::kInternalized*/));
+            std::unique_ptr<v8::BackingStore> backing = v8::ArrayBuffer::NewBackingStore(
+                                                (void *) ip.data(), ip.length(), [](void*, size_t, void*){}, nullptr);
+            args.GetReturnValue().Set(v8::ArrayBuffer::New(isolate, std::move(backing)/*, ArrayBufferCreationMode::kInternalized*/));
         }
     }
 
@@ -149,7 +151,9 @@ struct WebSocketWrapper {
             std::string_view ip = ws->getRemoteAddressAsText();
 
             /* Todo: we need to pass a copy here */
-            args.GetReturnValue().Set(ArrayBuffer::New(isolate, (void *) ip.data(), ip.length()/*, ArrayBufferCreationMode::kInternalized*/));
+            std::unique_ptr<v8::BackingStore> backing = v8::ArrayBuffer::NewBackingStore(
+                                                (void *) ip.data(), ip.length(), [](void*, size_t, void*){}, nullptr);
+            args.GetReturnValue().Set(v8::ArrayBuffer::New(isolate, std::move(backing)/*, ArrayBufferCreationMode::kInternalized*/));
         }
     }
 

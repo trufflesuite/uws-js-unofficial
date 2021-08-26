@@ -61,7 +61,9 @@ struct HttpResponseWrapper {
             res->onData([p = std::move(p), isolate](std::string_view data, bool last) {
                 HandleScope hs(isolate);
 
-                Local<ArrayBuffer> dataArrayBuffer = ArrayBuffer::New(isolate, (void *) data.data(), data.length());
+                std::unique_ptr<v8::BackingStore> backing = v8::ArrayBuffer::NewBackingStore(
+                                                (void *) data.data(), data.length(), [](void*, size_t, void*){}, nullptr);
+                Local<ArrayBuffer> dataArrayBuffer = v8::ArrayBuffer::New(isolate, std::move(backing));
 
                 Local<Value> argv[] = {dataArrayBuffer, Boolean::New(isolate, last)};
                 CallJS(isolate, Local<Function>::New(isolate, p), 2, argv);
@@ -107,7 +109,9 @@ struct HttpResponseWrapper {
             std::string_view ip = res->getRemoteAddress();
 
             /* Todo: we need to pass a copy here */
-            args.GetReturnValue().Set(ArrayBuffer::New(isolate, (void *) ip.data(), ip.length()/*, ArrayBufferCreationMode::kInternalized*/));
+            std::unique_ptr<v8::BackingStore> backing = v8::ArrayBuffer::NewBackingStore(
+                                                (void *) ip.data(), ip.length(), [](void*, size_t, void*){}, nullptr);
+            args.GetReturnValue().Set(v8::ArrayBuffer::New(isolate, std::move(backing)/*, ArrayBufferCreationMode::kInternalized*/));
         }
     }
 
@@ -120,7 +124,10 @@ struct HttpResponseWrapper {
             std::string_view ip = res->getRemoteAddressAsText();
 
             /* Todo: we need to pass a copy here */
-            args.GetReturnValue().Set(ArrayBuffer::New(isolate, (void *) ip.data(), ip.length()/*, ArrayBufferCreationMode::kInternalized*/));
+            std::unique_ptr<v8::BackingStore> backing = v8::ArrayBuffer::NewBackingStore(
+                                                (void *) ip.data(), ip.length(), [](void*, size_t, void*){}, nullptr);
+
+            args.GetReturnValue().Set(v8::ArrayBuffer::New(isolate, std::move(backing)/*, ArrayBufferCreationMode::kInternalized*/));
         }
     }
 
@@ -133,7 +140,10 @@ struct HttpResponseWrapper {
             std::string_view ip = res->getProxiedRemoteAddress();
 
             /* Todo: we need to pass a copy here */
-            args.GetReturnValue().Set(ArrayBuffer::New(isolate, (void *) ip.data(), ip.length()/*, ArrayBufferCreationMode::kInternalized*/));
+            std::unique_ptr<v8::BackingStore> backing = v8::ArrayBuffer::NewBackingStore(
+                                                (void *) ip.data(), ip.length(), [](void*, size_t, void*){}, nullptr);
+
+            args.GetReturnValue().Set(v8::ArrayBuffer::New(isolate, std::move(backing)/*, ArrayBufferCreationMode::kInternalized*/));
         }
     }
 
@@ -146,7 +156,9 @@ struct HttpResponseWrapper {
             std::string_view ip = res->getProxiedRemoteAddressAsText();
 
             /* Todo: we need to pass a copy here */
-            args.GetReturnValue().Set(ArrayBuffer::New(isolate, (void *) ip.data(), ip.length()/*, ArrayBufferCreationMode::kInternalized*/));
+            std::unique_ptr<v8::BackingStore> backing = v8::ArrayBuffer::NewBackingStore(
+                                                (void *) ip.data(), ip.length(), [](void*, size_t, void*){}, nullptr);
+            args.GetReturnValue().Set(v8::ArrayBuffer::New(isolate, std::move(backing)/*, ArrayBufferCreationMode::kInternalized*/));
         }
     }
 
