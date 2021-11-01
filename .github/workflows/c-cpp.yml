@@ -15,6 +15,7 @@ jobs:
           $ErrorActionPreference = 'SilentlyContinue'
           git clone --recursive https://github.com/trufflesuite/uws-js-unofficial.git
           cd uws-js-unofficial
+          git checkout "${GITHUB_REF##*/}"
           nmake
           xcopy /Y dist\*.node binaries
           git status
@@ -38,6 +39,7 @@ jobs:
           sudo apt install -y g++-aarch64-linux-gnu || true
           git clone --recursive https://github.com/trufflesuite/uws-js-unofficial.git
           cd uws-js-unofficial
+          git checkout "${GITHUB_REF##*/}"
           ls -R
           make
           cp dist/*.node binaries
