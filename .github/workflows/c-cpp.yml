@@ -49,32 +49,32 @@ jobs:
           path: binaries
           retention-days: 1
 
-aggregate_binaries:
-  needs: [build-windows, build-unix]
-  runs-on: ubuntu-20.04
-  steps:
-    - uses: actions/checkout@v2
-    - name: download windows binaries
-      uses: actions/download-artifact@v2
-      with:
-        name: windows-binaries
-        path: binaries
+  aggregate_binaries:
+    needs: [build-windows, build-unix]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: download windows binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: windows-binaries
+          path: binaries
 
-    - name: download unix binaries
-      uses: actions/download-artifact@v2
-      with:
-        name: unix-binaries
-        path: binaries
+      - name: download unix binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: unix-binaries
+          path: binaries
 
-    - name: Display structure of downloaded files
-      run: ls -R
-      working-directory: binaries
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: binaries
 
-    - name: configure Git
-      run: |
-        git config --global user.email "robot@trufflesuite.com"
-        git config --global user.name "Robot"
+      - name: configure Git
+        run: |
+          git config --global user.email "robot@trufflesuite.com"
+          git config --global user.name "Robot"
 
-    - run: git add binaries
-    - run: git commit -a -m "[GitHub Actions] Update binaries"
-    - run: git git push "https://robot:${{ secrets.SECRET }}@github.com/${GITHUB_REPOSITORY}" "${GITHUB_REF##*/}"
+      - run: git add binaries
+      - run: git commit -a -m "[GitHub Actions] Update binaries"
+      - run: git git push "https://robot:${{ secrets.SECRET }}@github.com/${GITHUB_REPOSITORY}" "${GITHUB_REF##*/}"
