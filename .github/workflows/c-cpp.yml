@@ -16,8 +16,6 @@ jobs:
           git clone --recursive https://github.com/trufflesuite/uws-js-unofficial.git
           cd uws-js-unofficial
           nmake
-          git fetch origin binaries:binaries
-          git checkout binaries
           xcopy /Y dist\*.node binaries
           git status
       - name: Upload prebuild-assets
