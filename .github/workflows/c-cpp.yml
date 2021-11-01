@@ -67,8 +67,8 @@ aggregate_binaries:
         path: binaries
 
     - name: Display structure of downloaded files
-       run: ls -R
-       working-directory: binaries
+      run: ls -R
+      working-directory: binaries
 
     - name: configure Git
       run: |
