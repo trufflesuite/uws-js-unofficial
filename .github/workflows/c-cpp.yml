@@ -13,9 +13,10 @@ jobs:
       - name: Update binaries
         run: |
           $ErrorActionPreference = 'SilentlyContinue'
-          git clone --recursive https://github.com/trufflesuite/uws-js-unofficial.git
+          git clone https://github.com/trufflesuite/uws-js-unofficial.git
           cd uws-js-unofficial
           git checkout "${GITHUB_REF##*/}"
+          git submodule update --init --recursive
           nmake
           xcopy /Y dist\*.node binaries
           git status
@@ -37,9 +38,10 @@ jobs:
           sudo xcode-select -switch /Applications/Xcode_12.2.app || true
           sudo apt update || true
           sudo apt install -y g++-aarch64-linux-gnu || true
-          git clone --recursive https://github.com/trufflesuite/uws-js-unofficial.git
+          git clone https://github.com/trufflesuite/uws-js-unofficial.git
           cd uws-js-unofficial
           git checkout "${GITHUB_REF##*/}"
+          git submodule update --init --recursive
           ls -R
           make
           cp dist/*.node binaries
