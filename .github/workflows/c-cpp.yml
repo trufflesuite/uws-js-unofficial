@@ -44,6 +44,7 @@ jobs:
           git submodule update --init --recursive
           ls -R
           make
+          mkdir binaries
           cp dist/*.node binaries
       - name: Upload prebuild-assets
         uses: actions/upload-artifact@v2
