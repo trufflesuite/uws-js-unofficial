@@ -21,7 +21,6 @@ jobs:
           $ErrorActionPreference = 'SilentlyContinue'
           nmake
           xcopy /Y dist\*.node binaries\
-          ls
 
       - name: Upload prebuild-assets
         uses: actions/upload-artifact@v2
@@ -85,4 +84,4 @@ jobs:
 
       - run: git add binaries
       - run: git commit -a -m "[GitHub Actions] Update binaries"
-      - run: git git push "https://robot:${{ secrets.SECRET }}@github.com/$GITHUB_REPOSITORY" "${GITHUB_REF##*/}"
+      - run: git push "https://robot:${{ secrets.SECRET }}@github.com/trufflesuite/uws-js-unofficial" ${GITHUB_REF##*/}
