@@ -10,16 +10,19 @@ jobs:
     steps:
       - uses: ilammy/msvc-dev-cmd@v1
       - uses: ilammy/setup-nasm@v1.2.1
+      - name: Checkout
+        uses: actions/checkout@v2
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            submodules: recursive
+
       - name: Update binaries
         run: |
           $ErrorActionPreference = 'SilentlyContinue'
-          git clone https://github.com/trufflesuite/uws-js-unofficial.git
-          cd uws-js-unofficial
-          git checkout ${GITHUB_REF##*/}
-          git submodule update --init --recursive
           nmake
           xcopy /Y dist\*.node binaries
           ls
+
       - name: Upload prebuild-assets
         uses: actions/upload-artifact@v2
         with:
@@ -33,15 +36,16 @@ jobs:
       matrix:
         os: [macos-11.0, ubuntu-20.04]
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            submodules: recursive
       - name: Update binaries
         run: |
           sudo xcode-select -switch /Applications/Xcode_12.2.app || true
           sudo apt update || true
           sudo apt install -y g++-aarch64-linux-gnu || true
-          git clone https://github.com/trufflesuite/uws-js-unofficial.git
-          cd uws-js-unofficial
-          git checkout ${GITHUB_REF##*/}
-          git submodule update --init --recursive
           make
           mkdir binaries
           cp dist/*.node binaries
