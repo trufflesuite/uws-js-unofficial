@@ -12,9 +12,9 @@ jobs:
       - uses: ilammy/setup-nasm@v1.2.1
       - name: Checkout
         uses: actions/checkout@v2
-          with:
-            token: ${{ secrets.GITHUB_TOKEN }}
-            submodules: recursive
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: recursive
 
       - name: Update binaries
         run: |
@@ -38,9 +38,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-          with:
-            token: ${{ secrets.GITHUB_TOKEN }}
-            submodules: recursive
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: recursive
       - name: Update binaries
         run: |
           sudo xcode-select -switch /Applications/Xcode_12.2.app || true
