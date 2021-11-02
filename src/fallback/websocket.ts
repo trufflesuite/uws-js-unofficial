@@ -95,6 +95,21 @@ export class WebSocket implements uWsWebSocket {
     return true;
   }
 
+  sendFirstFragment(message: RecognizedString, isBinary: boolean, compress: false = false){
+    this.internalWs.send(message, {fin: false, binary: isBinary, compress});
+    return true;
+  }
+
+  sendFragment(message: RecognizedString, isBinary: boolean, compress: false = false){
+    this.internalWs.send(message, {fin: false, binary: isBinary, compress});
+    return true;
+  }
+  
+  sendLastFragment(message: RecognizedString, isBinary: boolean, compress: false = false){
+    this.internalWs.send(message, {fin: true, binary: isBinary, compress});
+    return true;
+  }
+
   getBufferedAmount() {
     return this.internalWs.bufferedAmount;
   }

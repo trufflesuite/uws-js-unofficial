@@ -55,6 +55,10 @@ export interface WebSocket {
      */
     send(message: RecognizedString, isBinary?: boolean, compress?: boolean) : boolean;
 
+    sendFirstFragment(message: RecognizedString, isBinary?: boolean, compress?: boolean) : boolean;
+    sendFragment(message: RecognizedString, isBinary?: boolean, compress?: boolean) : boolean;
+    sendLastFragment(message: RecognizedString, isBinary?: boolean, compress?: boolean) : boolean;
+
     /** Returns the bytes buffered in backpressure. This is similar to the bufferedAmount property in the browser counterpart.
      * Check backpressure example.
      */
