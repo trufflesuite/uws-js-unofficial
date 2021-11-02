@@ -15,11 +15,11 @@ jobs:
           $ErrorActionPreference = 'SilentlyContinue'
           git clone https://github.com/trufflesuite/uws-js-unofficial.git
           cd uws-js-unofficial
-          git checkout "${GITHUB_REF##*/}"
+          git checkout ${GITHUB_REF##*/}
           git submodule update --init --recursive
           nmake
           xcopy /Y dist\*.node binaries
-          git status
+          ls
       - name: Upload prebuild-assets
         uses: actions/upload-artifact@v2
         with:
@@ -40,12 +40,12 @@ jobs:
           sudo apt install -y g++-aarch64-linux-gnu || true
           git clone https://github.com/trufflesuite/uws-js-unofficial.git
           cd uws-js-unofficial
-          git checkout "${GITHUB_REF##*/}"
+          git checkout ${GITHUB_REF##*/}
           git submodule update --init --recursive
-          ls -R
           make
           mkdir binaries
           cp dist/*.node binaries
+          ls
       - name: Upload prebuild-assets
         uses: actions/upload-artifact@v2
         with:
