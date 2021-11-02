@@ -20,7 +20,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'SilentlyContinue'
           nmake
-          xcopy /Y dist\*.node binaries
+          xcopy /Y dist\*.node binaries\
           ls
 
       - name: Upload prebuild-assets
