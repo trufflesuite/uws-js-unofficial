@@ -1,5 +1,7 @@
-import { TemplatedApp } from "../../docs/index";
+import { RecognizedString, TemplatedApp } from "../../docs/index";
 import JsTemplatedApp from "./templated-app";
+
+export const _cfg = (arg: RecognizedString) => {};
 
 export const us_listen_socket_close = (listenSocket: any) => {
   return listenSocket.close();
@@ -17,5 +19,6 @@ export function App(): TemplatedApp {
 
 export default {
   App,
-  us_listen_socket_close
+  us_listen_socket_close,
+  _cfg
 }

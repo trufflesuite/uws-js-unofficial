@@ -28,7 +28,7 @@ module.exports = (() => {
 	}
 
 	try {
-		return require('./binaries/uws_' + process.platform + '_' + process.arch + '_' + process.versions.modules + '.node');
+		return require('../binaries/uws_' + process.platform + '_' + process.arch + '_' + process.versions.modules + '.node');
 	} catch (e) {
 		console.warn('This version of µWS is not compatible with your Node.js build:\n\n' + e.toString());
 		console.warn("Falling back to a NodeJS implementation; performance may be degraded.\n\n");

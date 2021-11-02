@@ -78,6 +78,7 @@ export class HttpResponse implements uWsHttpResponse {
   }
 
   write(chunk: RecognizedString) {
+    this.response.write(chunk);
     return this;
   }
 
@@ -107,7 +108,6 @@ export class HttpResponse implements uWsHttpResponse {
   }
 
   end(data: RecognizedString = "", closeConnection: boolean = false) {
-    this.response.setHeader("Content-Length", data.toString().length);
     this.response.end(data);
     return this;
   }
