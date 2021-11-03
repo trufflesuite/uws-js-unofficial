@@ -53,7 +53,7 @@ export interface WebSocket {
      *
      * Make sure you properly understand the concept of backpressure. Check the backpressure example file.
      */
-    send(message: RecognizedString, isBinary?: boolean, compress?: boolean) : boolean;
+    send(message: RecognizedString, isBinary?: boolean, compress?: false) : boolean;
 
     sendFirstFragment(message: RecognizedString, isBinary?: boolean, compress?: boolean) : boolean;
     sendFragment(message: RecognizedString, compress?: boolean) : boolean;
@@ -237,8 +237,13 @@ export interface WebSocketBehavior {
      * Disable by using 0. Defaults to 120.
      */
     idleTimeout?: number;
-    /** What permessage-deflate compression to use. uWS.DISABLED, uWS.SHARED_COMPRESSOR or any of the uWS.DEDICATED_COMPRESSOR_xxxKB. Defaults to uWS.DISABLED. */
-    compression?: CompressOptions;
+    /**
+     * What permessage-deflate compression to use. uWS.DISABLED, uWS.SHARED_COMPRESSOR or any of the uWS.DEDICATED_COMPRESSOR_xxxKB. Defaults to uWS.DISABLED.
+     *
+     * **NOTE:** Compression is disabled by Truffle Suite in this fork due to issues
+     * with rebuilding for electron with compression available.
+     */
+    compression?: 0;
     /** Maximum length of allowed backpressure per socket when publishing or sending messages. Slow receivers with too high backpressure will be skipped until they catch up or timeout. Defaults to 1024 * 1024. */
     maxBackpressure?: number;
     /** Upgrade handler used to intercept HTTP upgrade requests and potentially upgrade to WebSocket.
@@ -261,14 +266,18 @@ export interface WebSocketBehavior {
 
 /** Options used when constructing an app. Especially for SSLApp.
  * These are options passed directly to uSockets, C layer.
+ *
+ * **NOTE:** SSL is disabled by Truffle Suite in this fork due to issues
+ * with rebuilding for electron with compression available. All SSL options
+ * are not available.
  */
 export interface AppOptions {
-    key_file_name?: RecognizedString;
-    cert_file_name?: RecognizedString;
-    passphrase?: RecognizedString;
-    dh_params_file_name?: RecognizedString;
-    /** This translates to SSL_MODE_RELEASE_BUFFERS */
-    ssl_prefer_low_memory_usage?: boolean;
+    // key_file_name?: RecognizedString;
+    // cert_file_name?: RecognizedString;
+    // passphrase?: RecognizedString;
+    // dh_params_file_name?: RecognizedString;
+    // /** This translates to SSL_MODE_RELEASE_BUFFERS */
+    // ssl_prefer_low_memory_usage?: boolean;
 }
 
 export enum ListenOptions {
@@ -319,7 +328,11 @@ export interface TemplatedApp {
 }
 
 /** Constructs a non-SSL app. An app is your starting point where you attach behavior to URL routes.
- * This is also where you listen and run your app, set any SSL options (in case of SSLApp) and the like.
+ * This is also where you listen and run your app.
+ *
+ * **NOTE:** SSL is disabled by Truffle Suite in this fork due to issues
+ * with rebuilding for electron with compression available. All SSL options
+ * and the SSLApp constructor are not available.
  */
 export function App(options?: AppOptions): TemplatedApp;
 
