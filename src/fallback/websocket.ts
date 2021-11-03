@@ -95,18 +95,20 @@ export class WebSocket implements uWsWebSocket {
     return true;
   }
 
+  private _fragBinState: boolean = false;
   sendFirstFragment(message: RecognizedString, isBinary: boolean, compress: false = false){
+    this._fragBinState = isBinary;
     this.internalWs.send(message, {fin: false, binary: isBinary, compress});
     return true;
   }
 
-  sendFragment(message: RecognizedString, isBinary: boolean, compress: false = false){
-    this.internalWs.send(message, {fin: false, binary: isBinary, compress});
+  sendFragment(message: RecognizedString, compress: false = false){
+    this.internalWs.send(message, {fin: false, binary: this._fragBinState, compress});
     return true;
   }
   
-  sendLastFragment(message: RecognizedString, isBinary: boolean, compress: false = false){
-    this.internalWs.send(message, {fin: true, binary: isBinary, compress});
+  sendLastFragment(message: RecognizedString, compress: false = false){
+    this.internalWs.send(message, {fin: true, binary: this._fragBinState, compress});
     return true;
   }
 
