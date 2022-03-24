@@ -1,10 +1,50 @@
-### :construction: This is a fork!
+## :construction: This is a fork!
 
 This is a fork of the original [uWebSockets.js](https://github.com/uNetworking/uWebSockets.js) by @alexhultman. This fork adds unofficial support for Electron builds (Electron version 8, 9, 10, 11, and 12) by changing the build pipeline to use `node-gyp` instead of a custom C++ build script which allows us to use [electron-rebuild](https://github.com/electron/electron-rebuild). This repo is mainly for internal use to support Truffle Suite's [Ganache UI](https://github.com/trufflesuite/ganache) Electron application.
 
 **NOTE**: These binaries **do not** support SSL or Compression. They were not necessary for our uses, and we had issues getting those to compile with the Electron headers.
 
-### :handshake: Permissively licensed by uNetworking AB
+## Creating a release
+
+This is an internal fork used primarily in [Ganache](https://github.com/trufflesuite/ganache). There are no tests (might be a good idea to add some!) so testing must be done via [Ganache](https://github.com/trufflesuite/ganache) and/or manually.
+
+### Update the version
+
+This will update the version of the package, and create commit these changes to git.
+
+First, find the current version of the package:
+
+    npm view . version
+    > 20.4.0-unofficial.4
+
+For local changes only, you will only want to increment the pre-release identifier (as the [version core](https://semver.org/#backusnaur-form-grammar-for-valid-semver-versions) tracks the upstream uWebSockets version), by using [npm-version](https://docs.npmjs.com/cli/v8/commands/npm-version) (this will commit the changes, tagged with the commit - remember to push this!) ie:
+
+    npm version 20.4.0-unofficial.5
+    > v20.4.0-unofficial.5
+
+### Build the package
+
+Create the package using [npm-pack](https://docs.npmjs.com/cli/v7/commands/npm-pack), which will build the project, and output `trufflesuite-uws-js-unofficial-<version>.tgz`. There will likely be a number of `clang: error:`s ouput, which you can safely ignore.
+
+This file `trufflesuite-uws-js-unofficial-<version>.tgz` is what will be published to npm, and will be served to clients from npm via `npm install`.
+
+### Test the package in Ganache
+
+This can be installed directly to a local nodejs project via `npm install <path-to-trufflesuite-uws-js-unofficial-<version>.tgz>`. In order to test the package within Ganache, navigate to a local clone of Ganache, and install the package directly:
+
+    npm install <path-to-trufflesuite-uws-js-unofficial-[version].tgz>
+
+And run the Ganache test suite (this will test both the native uWS, and Typescript fallback versions):
+
+    npm run test
+
+### Publish the updated package
+
+Run [npm-publish](https://docs.npmjs.com/cli/v8/commands/npm-publish) to publish the package to npm (you will need to be authenticated with a user who has appropriate permissions to publish the package - see [npm-adduser](https://docs.npmjs.com/cli/v7/commands/npm-adduser)):
+
+     npm publish <path-to-trufflesuite-uws-js-unofficial-[version].tgz>
+
+## :handshake: Permissively licensed by uNetworking AB
 Intellectual property and all rights reserved by [uNetworking](https://github.com/uNetworking/). The [license](./LICENSE) in this repository is the one kept from the [original repository](https://github.com/uNetworking/uWebSockets.js).
 
 Where such explicit notice is given, source code is licensed Apache License 2.0 which is a permissive OSI-approved license with very few limitations. Modified "forks" should be of nothing but licensed source code, and be made available under another product name. If you're uncertain about any of this, please ask before assuming.
