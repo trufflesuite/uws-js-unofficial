@@ -1,6 +1,6 @@
 ## :construction: This is a fork!
 
-This is a fork of the original [uWebSockets.js](https://github.com/uNetworking/uWebSockets.js) by @alexhultman. This fork adds unofficial support for Electron builds (Electron version 8, 9, 10, 11, and 12) by changing the build pipeline to use `node-gyp` instead of a custom C++ build script which allows us to use [electron-rebuild](https://github.com/electron/electron-rebuild). This repo is mainly for internal use to support Truffle Suite's [Ganache UI](https://github.com/trufflesuite/ganache) Electron application.
+This is a fork of the original [uWebSockets.js](https://github.com/uNetworking/uWebSockets.js) by @alexhultman. This fork adds unofficial support for Electron builds (Electron version 8, 9, 10, 11, and 12) by changing the build pipeline to use `node-gyp` instead of a custom C++ build script which allows us to use [electron-rebuild](https://github.com/electron/electron-rebuild) as well as introducing a Typescript fallback for nodejs runtimes and architectures not supported by the included binaries. This repo is mainly for internal use to support Truffle Suite's [Ganache UI](https://github.com/trufflesuite/ganache) Electron application.
 
 **NOTE**: These binaries **do not** support SSL or Compression. They were not necessary for our uses, and we had issues getting those to compile with the Electron headers.
 
@@ -8,7 +8,9 @@ This is a fork of the original [uWebSockets.js](https://github.com/uNetworking/u
 
 This is an internal fork used primarily in [Ganache](https://github.com/trufflesuite/ganache). There are no tests (might be a good idea to add some!) so testing must be done via [Ganache](https://github.com/trufflesuite/ganache) and/or manually.
 
+
 ### Update the version
+The `npm build` script attempts to build the native binaries (but will fail unless the [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) are checked out - see `.gitmodules` which defines the submodule `uWebSockets` which points to the [uNetworking/uWebSockets](https://github.com/uNetworking/uWebSockets) native project). This is not necessary for packaging a release. The GitHub action `aggregate_binaries` will checkout the submodules, build the binaries and commit them to `/binaries` which are then included in the npm package.
 
 This will update the version of the package, and create commit these changes to git.
 
@@ -30,13 +32,23 @@ This file `trufflesuite-uws-js-unofficial-<version>.tgz` is what will be publish
 
 ### Test the package in Ganache
 
-This can be installed directly to a local nodejs project via `npm install <path-to-trufflesuite-uws-js-unofficial-<version>.tgz>`. In order to test the package within Ganache, navigate to a local clone of Ganache, and install the package directly:
+This can be installed directly to a local nodejs project via `npm install <path-to-trufflesuite-uws-js-unofficial-<version>.tgz>`. In order to test the package within Ganache, `@trufflesuite/uws-js-unofficial` will need to be installed into a number of sub-packages:
 
-    npm install <path-to-trufflesuite-uws-js-unofficial-[version].tgz>
+* src/chains/ethereum/ethereum
+* src/chains/filecoin/filecoin
+* src/chains/tezos/tezos
+* src/packages/core
+* src/packages/utils
 
-And run the Ganache test suite (this will test both the native uWS, and Typescript fallback versions):
+Navigate to each of the following package roots (found by searching for `package.json` files containing `@trufflesuite/uws-js-unofficial`), and install the local `@trufflesuite/uws-js-unofficial` package directly:
 
-    npm run test
+     npm install <path-to-trufflesuite-uws-js-unofficial-[version].tgz>
+
+Run the Ganache test suite (this will exercise both the native uWS, and Typescript fallback versions) from the root of the Ganache repository:
+
+     npm run test
+
+Note: if testing externally to Ganache, the Typescript fallback can be forced by setting the `UWS_USE_FALLBACK` environment variable to `true`.
 
 ### Publish the updated package
 
