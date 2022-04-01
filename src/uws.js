@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-const NODEJS_12_MODULES_VERSION = 72;
+const NODEJS_12_MODULES_VERSION = '72';
 
 module.exports = (() => {
 	if (
