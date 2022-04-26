@@ -1,6 +1,6 @@
 {
   "name": "@trufflesuite/uws-js-unofficial",
-  "version": "20.4.0-unofficial.4",
+  "version": "20.8.0-unofficial.0",
   "description": "Simple, secure, & standards compliant web server for the most demanding of applications.",
   "main": "src/uws.js",
   "types": "docs/index.d.ts",
