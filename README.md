@@ -21,7 +21,7 @@ First, find the current version of the package:
 
 For local changes only, you will only want to increment the pre-release identifier (as the [version core](https://semver.org/#backusnaur-form-grammar-for-valid-semver-versions) tracks the upstream uWebSockets version), by using [npm-version](https://docs.npmjs.com/cli/v8/commands/npm-version) (this will commit the changes, tagged with the commit - remember to push this!) ie:
 
-    npm version 20.4.0-unofficial.5
+    npm version 20.4.0-unofficial.5 --git-tag-version false
     > v20.4.0-unofficial.5
 
 ### Build the package
