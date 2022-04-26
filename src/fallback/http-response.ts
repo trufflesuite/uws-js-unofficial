@@ -34,6 +34,7 @@ export class HttpResponse implements uWsHttpResponse {
     if (this.response.uncork) {
       this.response.uncork();
     }
+    return this;
   }
 
   onWritable(handler: (offset: number) => boolean) {
@@ -78,8 +79,7 @@ export class HttpResponse implements uWsHttpResponse {
   }
 
   write(chunk: RecognizedString) {
-    this.response.write(chunk);
-    return this;
+    return this.response.write(chunk);
   }
 
   tryEnd(

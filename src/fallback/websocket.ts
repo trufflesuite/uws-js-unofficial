@@ -175,6 +175,7 @@ export class WebSocket implements uWsWebSocket {
 
   cork(cb: () => void) {
     cb();
+    return this;
   }
 
   // TODO this isn't currently necessary
