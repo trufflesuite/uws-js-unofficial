@@ -37,11 +37,9 @@ struct node_version {
     char *abi;
 } versions[] = {
     {"v12.22.7", "72"},
-    {"v13.1.0", "79"},
     {"v14.0.0", "83"},
-    {"v15.0.0", "88"},
     {"v16.0.0", "93"},
-    {"v17.0.1", "102"}
+    {"v18.0.0", "108"}
 };
 
 /* Downloads headers, creates folders */
