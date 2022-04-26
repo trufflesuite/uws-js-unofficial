@@ -53,7 +53,7 @@ jobs:
       - name: Upload prebuild-assets
         uses: actions/upload-artifact@v2
         with:
-          name: unix-binaries
+          name: ${{ matrix.os }}-binaries
           path: binaries
           retention-days: 1
 
@@ -68,10 +68,16 @@ jobs:
           name: windows-binaries
           path: binaries
 
-      - name: download unix binaries
+      - name: download macos-11.0 binaries
         uses: actions/download-artifact@v2
         with:
-          name: unix-binaries
+          name: macos-11.0-binaries
+          path: binaries
+
+      - name: download ubuntu-20.04 binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: ubuntu-20.04-binaries
           path: binaries
 
       - name: Display structure of downloaded files
