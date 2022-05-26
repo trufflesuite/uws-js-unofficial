@@ -92,7 +92,7 @@ export class WebSocket implements uWsWebSocket {
       binary: isBinary,
       compress,
     });
-    return true;
+    return 1;
   }
 
   private _fragBinState: boolean = false;
@@ -127,9 +127,9 @@ export class WebSocket implements uWsWebSocket {
     return this;
   }
 
-  ping(message: RecognizedString) {
+  ping(message?: RecognizedString | undefined) {
     this.internalWs.ping(message);
-    return true;
+    return 1;
   }
 
   // TODO this isn't currently necessary
