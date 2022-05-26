@@ -4,6 +4,14 @@ This is a fork of the original [uWebSockets.js](https://github.com/uNetworking/u
 
 **NOTE**: These binaries **do not** support SSL or Compression. They were not necessary for our uses, and we had issues getting those to compile with the Electron headers.
 
+```
+  /* There are many common helper features */
+  idleTimeout: 32,
+  maxBackpressure: 1024,
+  maxPayloadLength: 512,
+  compression: DEDICATED_COMPRESSOR_3KB,
+```
+
 ## Creating a release
 
 This is an internal fork used primarily in [Ganache](https://github.com/trufflesuite/ganache). There are no tests (might be a good idea to add some!) so testing must be done via [Ganache](https://github.com/trufflesuite/ganache) and/or manually.
@@ -11,12 +19,6 @@ This is an internal fork used primarily in [Ganache](https://github.com/truffles
 
 ### Update the version
 The `npm build` script attempts to build the native binaries (but will fail unless the [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) are checked out - see `.gitmodules` which defines the submodule `uWebSockets` which points to the [uNetworking/uWebSockets](https://github.com/uNetworking/uWebSockets) native project). This is not necessary for packaging a release. The GitHub action `aggregate_binaries` will checkout the submodules, build the binaries and commit them to `/binaries` which are then included in the npm package.
-
-  /* There are many common helper features */
-  idleTimeout: 32,
-  maxBackpressure: 1024,
-  maxPayloadLength: 512,
-  compression: DEDICATED_COMPRESSOR_3KB,
 
 This will update the version of the package, and create commit these changes to git.
 
