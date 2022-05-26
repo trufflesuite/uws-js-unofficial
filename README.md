@@ -12,6 +12,12 @@ This is an internal fork used primarily in [Ganache](https://github.com/truffles
 ### Update the version
 The `npm build` script attempts to build the native binaries (but will fail unless the [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) are checked out - see `.gitmodules` which defines the submodule `uWebSockets` which points to the [uNetworking/uWebSockets](https://github.com/uNetworking/uWebSockets) native project). This is not necessary for packaging a release. The GitHub action `aggregate_binaries` will checkout the submodules, build the binaries and commit them to `/binaries` which are then included in the npm package.
 
+  /* There are many common helper features */
+  idleTimeout: 32,
+  maxBackpressure: 1024,
+  maxPayloadLength: 512,
+  compression: DEDICATED_COMPRESSOR_3KB,
+
 This will update the version of the package, and create commit these changes to git.
 
 First, find the current version of the package:
