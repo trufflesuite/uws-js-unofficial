@@ -12,6 +12,12 @@ This is an internal fork used primarily in [Ganache](https://github.com/truffles
 ### Update the version
 The `npm build` script attempts to build the native binaries (but will fail unless the [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) are checked out - see `.gitmodules` which defines the submodule `uWebSockets` which points to the [uNetworking/uWebSockets](https://github.com/uNetworking/uWebSockets) native project). This is not necessary for packaging a release. The GitHub action `aggregate_binaries` will checkout the submodules, build the binaries and commit them to `/binaries` which are then included in the npm package.
 
+  /* There are many common helper features */
+  idleTimeout: 32,
+  maxBackpressure: 1024,
+  maxPayloadLength: 512,
+  compression: DEDICATED_COMPRESSOR_3KB,
+
 This will update the version of the package, and create commit these changes to git.
 
 First, find the current version of the package:
@@ -39,6 +45,11 @@ This can be installed directly to a local nodejs project via `npm install <path-
 * src/chains/tezos/tezos
 * src/packages/core
 * src/packages/utils
+
+### :package: Easily installed
+We *recommend, for simplicity* installing with `yarn add uWebSockets.js@uNetworking/uWebSockets.js#v20.10.0` or any such [release](https://github.com/uNetworking/uWebSockets.js/releases).
+
+Being an open source project, you are of course perfectly free to choose [other ways of installation](https://docs.npmjs.com/cli/v6/commands/npm-install) as you might prefer.
 
 Navigate to each of the following package roots (found by searching for `package.json` files containing `@trufflesuite/uws-js-unofficial`), and install the local `@trufflesuite/uws-js-unofficial` package directly:
 
