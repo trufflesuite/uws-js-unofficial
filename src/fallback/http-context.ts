@@ -73,6 +73,10 @@ export class HttpContext {
     );
   }
 
+  public address(){
+    return this.http ? this.http.address() : null;
+  }
+
   public onWs(pattern: RecognizedString, behavior: WebSocketBehavior) {
     // We only need to create the WebSocket Server once, but we shouldn't
     // create it if the user never calls `TemplatedApp.ws(...)`

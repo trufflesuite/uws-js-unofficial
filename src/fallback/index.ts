@@ -7,6 +7,10 @@ export const us_listen_socket_close = (listenSocket: any) => {
   return listenSocket.close();
 };
 
+export const us_socket_local_port = (listenSocket: any) => {
+  return listenSocket.address().port;
+};
+
 /**
  * Maximum delay allowed until an HTTP connection is terminated due to
  * outstanding request or rejected data (slow loris protection)
