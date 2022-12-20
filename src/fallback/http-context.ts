@@ -1,3 +1,4 @@
+import type { AddressInfo } from "net";
 import http, { IncomingMessage, ServerResponse } from "http";
 import { Socket, ListenOptions } from "net";
 import { RecognizedString, WebSocketBehavior } from "../../docs/index";
@@ -73,8 +74,10 @@ export class HttpContext {
     );
   }
 
-  public address(){
-    return this.http ? this.http.address() : null;
+  public address(): AddressInfo | null {
+    // ganache doesn't support listening on a pipe or Unix domain socket,
+    // so `this.http.address()` can never return a string.
+    return this.http ? this.http.address() as AddressInfo : null;
   }
 
   public onWs(pattern: RecognizedString, behavior: WebSocketBehavior) {

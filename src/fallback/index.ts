@@ -1,14 +1,21 @@
-import { RecognizedString, TemplatedApp } from "../../docs/index";
+import { RecognizedString, TemplatedApp, us_listen_socket } from "../../docs/index";
+import { HttpContext } from "./http-context";
 import JsTemplatedApp from "./templated-app";
 
 export const _cfg = (arg: RecognizedString) => {};
 
-export const us_listen_socket_close = (listenSocket: any) => {
+export const us_listen_socket_close = (listenSocket: HttpContext) => {
   return listenSocket.close();
 };
 
-export const us_socket_local_port = (listenSocket: any) => {
-  return listenSocket.address().port;
+export const us_socket_local_port = (listenSocket: HttpContext) => {
+  if (!listenSocket) throw new Error("Invalid listen socket");
+  const address = listenSocket.address();
+  if (address) {
+    return address.port;
+  } else {
+    return null;
+  }
 };
 
 /**
