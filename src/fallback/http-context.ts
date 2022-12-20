@@ -73,7 +73,7 @@ export class HttpContext {
     );
   }
 
-  public address(){
+  public address() {
     return this.http ? this.http.address() : null;
   }
 
