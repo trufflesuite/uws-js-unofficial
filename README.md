@@ -16,8 +16,8 @@ This is a fork of the original [uWebSockets.js](https://github.com/uNetworking/u
 
 This is an internal fork used primarily in [Ganache](https://github.com/trufflesuite/ganache). There are no tests (might be a good idea to add some!) so testing must be done via [Ganache](https://github.com/trufflesuite/ganache) and/or manually.
 
-
 ### Update the version
+
 The `npm build` script attempts to build the native binaries (but will fail unless the [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) are checked out - see `.gitmodules` which defines the submodule `uWebSockets` which points to the [uNetworking/uWebSockets](https://github.com/uNetworking/uWebSockets) native project). This is not necessary for packaging a release. The GitHub action `aggregate_binaries` will checkout the submodules, build the binaries and commit them to `/binaries` which are then included in the npm package.
 
 This will update the version of the package, and create commit these changes to git.
@@ -42,11 +42,11 @@ This file `trufflesuite-uws-js-unofficial-<version>.tgz` is what will be publish
 
 This can be installed directly to a local nodejs project via `npm install <path-to-trufflesuite-uws-js-unofficial-<version>.tgz>`. In order to test the package within Ganache, `@trufflesuite/uws-js-unofficial` will need to be installed into a number of sub-packages:
 
-* src/chains/ethereum/ethereum
-* src/chains/filecoin/filecoin
-* src/chains/tezos/tezos
-* src/packages/core
-* src/packages/utils
+- src/chains/ethereum/ethereum
+- src/chains/filecoin/filecoin
+- src/chains/tezos/tezos
+- src/packages/core
+- src/packages/utils
 
 Navigate to each of the following package roots (found by searching for `package.json` files containing `@trufflesuite/uws-js-unofficial`), and install the local `@trufflesuite/uws-js-unofficial` package directly:
 
@@ -65,6 +65,7 @@ Run [npm-publish](https://docs.npmjs.com/cli/v8/commands/npm-publish) to publish
      npm publish <path-to-trufflesuite-uws-js-unofficial-[version].tgz>
 
 ## :handshake: Permissively licensed by uNetworking AB
+
 Intellectual property and all rights reserved by [uNetworking](https://github.com/uNetworking/). The [license](./LICENSE) in this repository is the one kept from the [original repository](https://github.com/uNetworking/uWebSockets.js).
 
 Where such explicit notice is given, source code is licensed Apache License 2.0 which is a permissive OSI-approved license with very few limitations. Modified "forks" should be of nothing but licensed source code, and be made available under another product name. If you're uncertain about any of this, please ask before assuming.
