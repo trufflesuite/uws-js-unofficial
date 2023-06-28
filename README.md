@@ -4,12 +4,49 @@ This is a fork of the original [uWebSockets.js](https://github.com/uNetworking/u
 
 **NOTE**: These binaries **do not** support SSL or Compression. They were not necessary for our uses, and we had issues getting those to compile with the Electron headers.
 
-```
-  /* There are many common helper features */
-  idleTimeout: 32,
-  maxBackpressure: 1024,
-  maxPayloadLength: 512,
-  compression: DEDICATED_COMPRESSOR_3KB,
+### :zap: Simple performance
+
+µWebSockets.js is a web server bypass for Node.js that reimplements eventing, networking, encryption, web protocols, routing and pub/sub in highly optimized C++. As such, µWebSockets.js delivers web serving for Node.js, **[8.5x that of Fastify](https://alexhultman.medium.com/serving-100k-requests-second-from-a-fanless-raspberry-pi-4-over-ethernet-fdd2c2e05a1e)** and at least **[10x that of Socket.IO](https://medium.com/swlh/100k-secure-websockets-with-raspberry-pi-4-1ba5d2127a23)**. It is also the built-in **[web server of Bun](https://bun.sh/)**.
+
+- We _recommend, for simplicity_ installing with `bun install uNetworking/uWebSockets.js#v20.27.0` or any such [release](https://github.com/uNetworking/uWebSockets.js/releases). Use [official builds](https://nodejs.org/en/download) of Node.js LTS.
+
+- Browse the [documentation](https://unetworking.github.io/uWebSockets.js/generated/) and see the [main repo](https://github.com/uNetworking/uWebSockets). There are tons of [examples](examples) but here's the gist of it all:
+
+```javascript
+/* Non-SSL is simply App() */
+require("uWebSockets.js")
+  .SSLApp({
+    /* There are more SSL options, cut for brevity */
+    key_file_name: "misc/key.pem",
+    cert_file_name: "misc/cert.pem",
+  })
+  .ws("/*", {
+    /* There are many common helper features */
+    idleTimeout: 32,
+    maxBackpressure: 1024,
+    maxPayloadLength: 512,
+    compression: DEDICATED_COMPRESSOR_3KB,
+
+    /* For brevity we skip the other events (upgrade, open, ping, pong, close) */
+    message: (ws, message, isBinary) => {
+      /* You can do app.publish('sensors/home/temperature', '22C') kind of pub/sub as well */
+
+      /* Here we echo the message back, using compression if available */
+      let ok = ws.send(message, isBinary, true);
+    },
+  })
+  .get("/*", (res, req) => {
+    /* It does Http as well */
+    res
+      .writeStatus("200 OK")
+      .writeHeader("IsExample", "Yes")
+      .end("Hello there!");
+  })
+  .listen(9001, (listenSocket) => {
+    if (listenSocket) {
+      console.log("Listening to port 9001");
+    }
+  });
 ```
 
 ## Creating a release

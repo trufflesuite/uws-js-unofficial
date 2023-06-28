@@ -21,14 +21,22 @@
 #include <v8.h>
 using namespace v8;
 
+thread_local int insideCorkCallback = 0;
+
 struct HttpResponseWrapper {
+
+    static void assumeCorked() {
+        if (!insideCorkCallback) {
+            std::cerr << "Warning: uWS.HttpResponse writes must be made from within a corked callback. See documentation for uWS.HttpResponse.cork and consult the user manual." << std::endl;
+        }
+    }
 
     template <int PROTOCOL>
     static inline constexpr decltype(auto) getHttpResponse(const FunctionCallbackInfo<Value> &args) {
         Isolate *isolate = args.GetIsolate();
         auto *res = (uWS::HttpResponse<PROTOCOL != 0> *) args.Holder()->GetAlignedPointerFromInternalField(0);
         if (!res) {
-            args.GetReturnValue().Set(isolate->ThrowException(v8::Exception::Error(String::NewFromUtf8(isolate, "Invalid access of discarded (invalid, deleted) uWS.HttpResponse/SSLHttpResponse.", NewStringType::kNormal).ToLocalChecked())));
+            args.GetReturnValue().Set(isolate->ThrowException(v8::Exception::Error(String::NewFromUtf8(isolate, "uWS.HttpResponse must not be accessed after uWS.HttpResponse.onAborted callback, or after a successful response. See documentation for uWS.HttpResponse and consult the user manual.", NewStringType::kNormal).ToLocalChecked())));
         }
 
         if constexpr (PROTOCOL == 2) {
@@ -198,8 +206,9 @@ struct HttpResponseWrapper {
                 /* We should check if this is really here! */
                 MaybeLocal<Value> maybeBoolean = CallJS(isolate, Local<Function>::New(isolate, p), 1, argv);
                 if (maybeBoolean.IsEmpty()) {
-                    std::cerr << "ERROR! onWritable must return a boolean value according to documentation!" << std::endl;
-                    exit(-1);
+                    std::cerr << "Warning: uWS.HttpResponse.onWritable callback should return Boolean. See documentation for uWS.HttpResponse.onWritable and consult the user manual." << std::endl;
+                    /* The default should be true, as it only adds a potential extra send, rather than erroneously avoid it */
+                    return true;
                 }
 
                 return maybeBoolean.ToLocalChecked()->BooleanValue(isolate);
@@ -219,7 +228,8 @@ struct HttpResponseWrapper {
             if (data.isInvalid(args)) {
                 return;
             }
-            
+
+            assumeCorked();
             res->writeStatus(data.getString());
 
             args.GetReturnValue().Set(args.Holder());
@@ -242,6 +252,7 @@ struct HttpResponseWrapper {
             }
 
             invalidateResObject(args);
+            assumeCorked();
             res->endWithoutBody(reportedContentLength, closeConnection);
 
             args.GetReturnValue().Set(args.Holder());
@@ -265,6 +276,7 @@ struct HttpResponseWrapper {
 
             invalidateResObject(args);
 
+            assumeCorked();
             res->end(data.getString(), closeConnection);
 
             args.GetReturnValue().Set(args.Holder());
@@ -287,6 +299,7 @@ struct HttpResponseWrapper {
                 totalSize = (size_t) args[1]->NumberValue(isolate->GetCurrentContext()).ToChecked();
             }
 
+            assumeCorked();
             auto [ok, hasResponded] = res->tryEnd(data.getString(), totalSize);
 
             /* Invalidate this object if we responded completely */
@@ -313,6 +326,7 @@ struct HttpResponseWrapper {
             if (data.isInvalid(args)) {
                 return;
             }
+            assumeCorked();
             bool ok = res->write(data.getString());
 
             args.GetReturnValue().Set(Boolean::New(isolate, ok));
@@ -333,6 +347,7 @@ struct HttpResponseWrapper {
             if (value.isInvalid(args)) {
                 return;
             }
+            assumeCorked();
             res->writeHeader(header.getString(), value.getString());
 
             args.GetReturnValue().Set(args.Holder());
@@ -347,8 +362,10 @@ struct HttpResponseWrapper {
         if (res) {
 
             res->cork([cb = Local<Function>::Cast(args[0]), isolate]() {
+                insideCorkCallback++;
                 /* This one is called from JS so we don't need CallJS */
                 cb->Call(isolate->GetCurrentContext(), isolate->GetCurrentContext()->Global(), 0, nullptr).IsEmpty();
+                insideCorkCallback--;
             });
 
             args.GetReturnValue().Set(args.Holder());
@@ -390,6 +407,7 @@ struct HttpResponseWrapper {
             userData.Reset(isolate, Local<Object>::Cast(args[0]));
 
             /* Immediately calls open handler */
+            assumeCorked();
             res->template upgrade<PerSocketData>({
                 std::move(userData)
             }, secWebSocketKey.getString(), secWebSocketProtocol.getString(),
@@ -428,6 +446,7 @@ struct HttpResponseWrapper {
             resTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "getWriteOffset", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, res_getWriteOffset<SSL>));
             resTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "getRemoteAddress", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, res_getRemoteAddress<SSL>));
             resTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "cork", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, res_cork<SSL>));
+            resTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "collect", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, res_cork<SSL>));
             resTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "upgrade", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, res_upgrade<SSL>));
             resTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "getRemoteAddressAsText", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, res_getRemoteAddressAsText<SSL>));
             resTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "getProxiedRemoteAddress", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, res_getProxiedRemoteAddress<SSL>));

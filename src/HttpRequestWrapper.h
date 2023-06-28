@@ -31,7 +31,7 @@ struct HttpRequestWrapper {
         /* Thow on deleted request */
         auto *req = (uWS::HttpRequest *) args.Holder()->GetAlignedPointerFromInternalField(0);
         if (!req) {
-            args.GetReturnValue().Set(isolate->ThrowException(v8::Exception::Error(String::NewFromUtf8(isolate, "Using uWS.HttpRequest / uWS.Http3Request past its request handler return is forbidden (it is stack allocated).", NewStringType::kNormal).ToLocalChecked())));
+            args.GetReturnValue().Set(isolate->ThrowException(v8::Exception::Error(String::NewFromUtf8(isolate, "uWS.HttpRequest must not be accessed after await or route handler return. See documentation for uWS.HttpRequest and consult the user manual.", NewStringType::kNormal).ToLocalChecked())));
         }
 
         if constexpr (QUIC) {
@@ -155,6 +155,11 @@ struct HttpRequestWrapper {
                 query = req->getQuery(keyString.getString());
             } else {
                 query = req->getQuery();
+            }
+            
+            /* If we have nullptr as data, it's not simply an empty string */
+            if (query.data() == nullptr) {
+                return;
             }
 
             args.GetReturnValue().Set(String::NewFromUtf8(isolate, query.data(), NewStringType::kNormal, query.length()).ToLocalChecked());

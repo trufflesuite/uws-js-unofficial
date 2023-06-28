@@ -25,8 +25,14 @@ using namespace v8;
 #include <node.h>
 
 MaybeLocal<Value> CallJS(Isolate *isolate, Local<Function> f, int argc, Local<Value> *argv) {
+    extern int calledIntoJS;
+    extern thread_local int insideCorkCallback;
+    /* All calls we do into JS are properly corked, except for res.cork, where we increase the counter explicitly */
+    insideCorkCallback++;
     /* Slow path */
-    return node::MakeCallback(isolate, isolate->GetCurrentContext()->Global(), f, argc, argv, {0, 0});
+    auto ret = node::MakeCallback(isolate, isolate->GetCurrentContext()->Global(), f, argc, argv, {0, 0});
+    insideCorkCallback--;
+    return ret;
 }
 
 Local<v8::ArrayBuffer> ArrayBuffer_New(Isolate *isolate, void *data, size_t length) {
