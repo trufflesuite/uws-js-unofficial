@@ -35,7 +35,7 @@ export class HttpRequest implements uWsHttpRequest {
   }
 
   public getHeader(lowerCasedHeader: string) {
-    return this.request.headers[lowerCasedHeader] as string || "";
+    return (this.request.headers[lowerCasedHeader] as string) || "";
   }
 
   public getUrl() {
@@ -54,6 +54,10 @@ export class HttpRequest implements uWsHttpRequest {
     return this.request.method;
   }
 
+  public getCaseSensitiveMethod(): string {
+    throw new Error("Not implemented");
+  }
+
   /**
    * Returns the raw querystring as a whole, still encoded
    */
@@ -69,7 +73,7 @@ export class HttpRequest implements uWsHttpRequest {
 
     const search = new URL(this.request.url).search;
     if (key != null) {
-      return parse(key)[key] as string || "";
+      return (parse(key)[key] as string) || "";
     } else {
       return search;
     }

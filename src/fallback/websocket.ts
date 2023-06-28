@@ -22,7 +22,7 @@ function toArrayBuffer(buf: Buffer): ArrayBuffer {
   return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
 }
 
-export class WebSocket implements uWsWebSocket {
+export class WebSocket<UserData> implements uWsWebSocket<UserData> {
   private internalWs: InternalWebSocket;
 
   constructor(internalWs: InternalWebSocket) {
@@ -37,7 +37,7 @@ export class WebSocket implements uWsWebSocket {
     internalWs.binaryType = "nodebuffer";
   }
 
-  initialize(behavior: WebSocketBehavior) {
+  initialize(behavior: WebSocketBehavior<UserData>) {
     this.internalWs.removeAllListeners();
 
     if (typeof behavior.open === "function") {
@@ -96,19 +96,31 @@ export class WebSocket implements uWsWebSocket {
   }
 
   private _fragBinState: boolean = false;
-  sendFirstFragment(message: RecognizedString, isBinary: boolean, compress: false = false){
+  sendFirstFragment(
+    message: RecognizedString,
+    isBinary: boolean,
+    compress: false = false
+  ) {
     this._fragBinState = isBinary;
-    this.internalWs.send(message, {fin: false, binary: isBinary, compress});
+    this.internalWs.send(message, { fin: false, binary: isBinary, compress });
     return true;
   }
 
-  sendFragment(message: RecognizedString, compress: false = false){
-    this.internalWs.send(message, {fin: false, binary: this._fragBinState, compress});
+  sendFragment(message: RecognizedString, compress: false = false) {
+    this.internalWs.send(message, {
+      fin: false,
+      binary: this._fragBinState,
+      compress,
+    });
     return true;
   }
-  
-  sendLastFragment(message: RecognizedString, compress: false = false){
-    this.internalWs.send(message, {fin: true, binary: this._fragBinState, compress});
+
+  sendLastFragment(message: RecognizedString, compress: false = false) {
+    this.internalWs.send(message, {
+      fin: true,
+      binary: this._fragBinState,
+      compress,
+    });
     return true;
   }
 
@@ -140,14 +152,14 @@ export class WebSocket implements uWsWebSocket {
 
   // TODO this isn't currently necessary
   // so we're not implementing it yet
-  isSubscribed(){
+  isSubscribed() {
     return false;
   }
 
   // TODO this isn't currently necessary
   // so we're not implementing it yet
-  getTopics() : string[]{
-    return []
+  getTopics(): string[] {
+    return [];
   }
 
   // TODO this isn't currently necessary
@@ -176,6 +188,10 @@ export class WebSocket implements uWsWebSocket {
   cork(cb: () => void) {
     cb();
     return this;
+  }
+
+  getUserData(): UserData {
+    throw new Error("Not implemented");
   }
 
   // TODO this isn't currently necessary

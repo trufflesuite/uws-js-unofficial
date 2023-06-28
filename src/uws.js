@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-const NODEJS_12_MODULES_VERSION = "72";
-
 module.exports = (() => {
   if (
     process.env.UWS_USE_FALLBACK === "true" ||
@@ -40,15 +38,13 @@ module.exports = (() => {
       process.versions.modules +
       ".node");
   } catch (e) {
-    if (process.versions.modules !== NODEJS_12_MODULES_VERSION) {
-      console.warn(
-        "This version of µWS is not compatible with your Node.js build:\n\n" +
-          e.toString()
-      );
-      console.warn(
-        "Falling back to a NodeJS implementation; performance may be degraded.\n\n"
-      );
-    }
+    console.warn(
+      "This version of µWS is not compatible with your Node.js build:\n\n" +
+      e.toString()
+    );
+    console.warn(
+      "Falling back to a NodeJS implementation; performance may be degraded.\n\n"
+    );
     const fallback = require("../dist/index");
     return fallback;
   }

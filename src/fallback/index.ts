@@ -1,4 +1,8 @@
-import { RecognizedString, TemplatedApp, us_listen_socket } from "../../docs/index";
+import {
+  RecognizedString,
+  TemplatedApp,
+  us_listen_socket,
+} from "../../docs/index";
 import { HttpContext } from "./http-context";
 import JsTemplatedApp from "./templated-app";
 
@@ -24,12 +28,12 @@ export const us_socket_local_port = (listenSocket: HttpContext) => {
  */
 const HTTP_IDLE_TIMEOUT_S = 10 as const;
 
-export function App(): TemplatedApp {
-  return new JsTemplatedApp();
+export function App<UserData>(): TemplatedApp {
+  return new JsTemplatedApp<UserData>();
 }
 
 export default {
   App,
   us_listen_socket_close,
-  _cfg
-}
+  _cfg,
+};
