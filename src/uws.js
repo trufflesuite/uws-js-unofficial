@@ -15,28 +15,37 @@
  * limitations under the License.
  */
 
-const NODEJS_12_MODULES_VERSION = '72';
-
 module.exports = (() => {
-	if (
-		process.env.UWS_USE_FALLBACK === "true" ||
-		process.env.UWS_USE_FALLBACK === "True" ||
-		process.env.UWS_USE_FALLBACK === "TRUE" ||
-		process.env.UWS_USE_FALLBACK === "1"
-	) {
-		console.log("Using µWS fallback implementation due to UWS_USE_FALLBACK environment flag being enabled; performance may be degraded.\n\n");
-		const fallback = require("../dist/index");
-		return fallback;
-	}
+  if (
+    process.env.UWS_USE_FALLBACK === "true" ||
+    process.env.UWS_USE_FALLBACK === "True" ||
+    process.env.UWS_USE_FALLBACK === "TRUE" ||
+    process.env.UWS_USE_FALLBACK === "1"
+  ) {
+    console.log(
+      "Using µWS fallback implementation due to UWS_USE_FALLBACK environment flag being enabled; performance may be degraded.\n\n"
+    );
+    const fallback = require("../dist/index");
+    return fallback;
+  }
 
-	try {
-		return require('../binaries/uws_' + process.platform + '_' + process.arch + '_' + process.versions.modules + '.node');
-	} catch (e) {
-		if (process.versions.modules !== NODEJS_12_MODULES_VERSION) {
-			console.warn('This version of µWS is not compatible with your Node.js build:\n\n' + e.toString());
-			console.warn("Falling back to a NodeJS implementation; performance may be degraded.\n\n");
-		}
-		const fallback = require("../dist/index");
-		return fallback;
-	}
+  try {
+    return require("../binaries/uws_" +
+      process.platform +
+      "_" +
+      process.arch +
+      "_" +
+      process.versions.modules +
+      ".node");
+  } catch (e) {
+    console.warn(
+      "This version of µWS is not compatible with your Node.js build:\n\n" +
+      e.toString()
+    );
+    console.warn(
+      "Falling back to a NodeJS implementation; performance may be degraded.\n\n"
+    );
+    const fallback = require("../dist/index");
+    return fallback;
+  }
 })();

@@ -15,14 +15,14 @@ export class HttpContext {
   http: http.Server | null;
   closed: boolean;
   wsServer: InternalWebSocket.Server | null;
-  wsBehaviors: Map<RecognizedString, WebSocketBehavior>;
+  wsBehaviors: Map<RecognizedString, WebSocketBehavior<any>>;
 
   constructor() {
     this.router = new HttpRouter();
     this.closed = false;
     this.http = null;
     this.wsServer = null;
-    this.wsBehaviors = new Map<RecognizedString, WebSocketBehavior>();
+    this.wsBehaviors = new Map<RecognizedString, WebSocketBehavior<any>>();
   }
 
   public onHttp(
@@ -46,7 +46,9 @@ export class HttpContext {
         const user = r.getUserData();
 
         if (user === null) {
-          throw new Error("Could not retrieve user data; this should not happen.")
+          throw new Error(
+            "Could not retrieve user data; this should not happen."
+          );
         }
 
         user.httpRequest.setYield(false);
@@ -77,10 +79,13 @@ export class HttpContext {
   public address(): AddressInfo | null {
     // ganache doesn't support listening on a pipe or Unix domain socket,
     // so `this.http.address()` can never return a string.
-    return this.http ? this.http.address() as AddressInfo : null;
+    return this.http ? (this.http.address() as AddressInfo) : null;
   }
 
-  public onWs(pattern: RecognizedString, behavior: WebSocketBehavior) {
+  public onWs<UserData>(
+    pattern: RecognizedString,
+    behavior: WebSocketBehavior<UserData>
+  ) {
     // We only need to create the WebSocket Server once, but we shouldn't
     // create it if the user never calls `TemplatedApp.ws(...)`
     if (!this.wsServer) {
@@ -101,13 +106,21 @@ export class HttpContext {
 
   handleRequest(req: IncomingMessage, res: ServerResponse) {
     this.router.setUserData(req, res);
-    if (!req.method || !req.url || !this.router.route(req.method.toLowerCase(), req.url)) {
+    if (
+      !req.method ||
+      !req.url ||
+      !this.router.route(req.method.toLowerCase(), req.url)
+    ) {
       res.destroy();
       return null;
     }
   }
 
-  private handleHttpUpgrade(request: IncomingMessage, socket: Socket, head: Buffer) {
+  private handleHttpUpgrade(
+    request: IncomingMessage,
+    socket: Socket,
+    head: Buffer
+  ) {
     const pathname = request.url;
     if (this.wsServer !== null) {
       const patterns = this.wsBehaviors.keys();
@@ -137,22 +150,27 @@ export class HttpContext {
   }
 
   private sockets = new Set<Socket>();
-  listen(host: RecognizedString | undefined, port: number, callback: ListenCallback) {
-    const server = this.http = http.createServer(this.handleRequest.bind(this));
-    server.on("connection", socket => {
+  listen(
+    host: RecognizedString | undefined,
+    port: number,
+    callback: ListenCallback
+  ) {
+    const server = (this.http = http.createServer(
+      this.handleRequest.bind(this)
+    ));
+    server.on("connection", (socket) => {
       server.once("close", () => {
         this.sockets.delete(socket);
       });
     });
     server.on("upgrade", this.handleHttpUpgrade.bind(this));
 
-    const handleError = (err: Error & {code: string, syscall: string}) => {
+    const handleError = (err: Error & { code: string; syscall: string }) => {
       if (err.syscall === "listen") {
         server.removeListener("error", handleError);
         callback(false);
-      }
-      else throw err;
-    }
+      } else throw err;
+    };
     server.on("error", handleError);
     server.on("listening", () => server.removeListener("error", handleError));
 

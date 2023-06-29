@@ -25,8 +25,14 @@ using namespace v8;
 #include <node.h>
 
 MaybeLocal<Value> CallJS(Isolate *isolate, Local<Function> f, int argc, Local<Value> *argv) {
+    extern int calledIntoJS;
+    extern thread_local int insideCorkCallback;
+    /* All calls we do into JS are properly corked, except for res.cork, where we increase the counter explicitly */
+    insideCorkCallback++;
     /* Slow path */
-    return node::MakeCallback(isolate, isolate->GetCurrentContext()->Global(), f, argc, argv, {0, 0});
+    auto ret = node::MakeCallback(isolate, isolate->GetCurrentContext()->Global(), f, argc, argv, {0, 0});
+    insideCorkCallback--;
+    return ret;
 }
 
 Local<v8::ArrayBuffer> ArrayBuffer_New(Isolate *isolate, void *data, size_t length) {
@@ -46,8 +52,8 @@ struct PerSocketData {
 
 struct PerContextData {
     Isolate *isolate;
-    UniquePersistent<Object> reqTemplate;
-    UniquePersistent<Object> resTemplate[2];
+    UniquePersistent<Object> reqTemplate[2]; // 0 = non-SSL/SSL, 1 = Http3
+    UniquePersistent<Object> resTemplate[3]; // 0 = non-SSL, 1 = SSL, 2 = Http3
     UniquePersistent<Object> wsTemplate[2];
 
     /* We hold all apps until free */
@@ -58,7 +64,20 @@ struct PerContextData {
 template <class APP>
 static constexpr int getAppTypeIndex() {
     /* Returns 1 for SSLApp and 0 for App */
-    return std::is_same<APP, uWS::SSLApp>::value;
+    //return std::is_same<APP, uWS::SSLApp>::value;
+
+    /* Returns 2 for H3App */
+
+    if constexpr (std::is_same<APP, uWS::App>::value) {
+        return 0;
+    } else if constexpr (std::is_same<APP, uWS::SSLApp>::value) {
+        return 1;
+    } else if constexpr (std::is_same<APP, uWS::H3App>::value) {
+        return 2;
+    } else {
+        // why does this fail?
+        //static_assert(false);
+    }
 }
 
 static inline bool missingArguments(int length, const FunctionCallbackInfo<Value> &args) {

@@ -2,7 +2,8 @@ import {
   RecognizedString,
   WebSocketBehavior,
   TemplatedApp as uWsTemplatedApp,
-  AppOptions
+  AppOptions,
+  us_listen_socket,
 } from "../../docs/index";
 
 import { HttpHandler, ListenCallback } from "./types";
@@ -10,14 +11,17 @@ import { HttpContext } from "./http-context";
 import { HttpResponse } from "./http-response";
 import { HttpRequest } from "./http-request";
 
-export default class TemplatedApp implements uWsTemplatedApp {
+export default class TemplatedApp<UserData> implements uWsTemplatedApp {
   httpContext: HttpContext;
 
   constructor() {
     this.httpContext = new HttpContext();
   }
 
-  ws(pattern: RecognizedString, behavior: WebSocketBehavior) {
+  ws<UserData>(
+    pattern: RecognizedString,
+    behavior: WebSocketBehavior<UserData>
+  ) {
     this.httpContext.onWs(pattern, behavior);
 
     this.httpContext.onHttp(
@@ -130,20 +134,29 @@ export default class TemplatedApp implements uWsTemplatedApp {
     return false;
   }
 
-  numSubscribers(topic: RecognizedString){
+  numSubscribers(topic: RecognizedString) {
     throw new Error("Not implemented");
     return 0;
   }
-  addServerName(hostname: string, options: AppOptions){
-    throw new Error("Not implemented");
-    return this
-  }
-  removeServerName(hostname: string){
-    throw new Error("Not implemented");
-    return this
-  }
-  missingServerName(cb: (hostname: string) => void){
+  addServerName(hostname: string, options: AppOptions): TemplatedApp<UserData> {
     throw new Error("Not implemented");
     return this;
+  }
+  removeServerName(hostname: string) {
+    throw new Error("Not implemented");
+    return this;
+  }
+  missingServerName(cb: (hostname: string) => void) {
+    throw new Error("Not implemented");
+    return this;
+  }
+  listen_unix(
+    cb: (listenSocket: us_listen_socket) => void | Promise<void>,
+    path: RecognizedString
+  ): TemplatedApp<UserData> {
+    throw new Error("Not implemented");
+  }
+  domain(domain: string): TemplatedApp<UserData> {
+    throw new Error("Not implemented");
   }
 }

@@ -2,7 +2,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import {
   RecognizedString,
   HttpResponse as uWsHttpResponse,
-  us_socket_context_t
+  us_socket_context_t,
 } from "../../docs/index";
 
 export class HttpResponse implements uWsHttpResponse {
@@ -16,7 +16,7 @@ export class HttpResponse implements uWsHttpResponse {
     this.response.on("close", () => {
       this.abortHandler && this.abortHandler();
     });
-    req.on("data", data => {
+    req.on("data", (data) => {
       this.dataHandler && this.dataHandler(data, false);
     });
     req.on("end", () => {
@@ -108,6 +108,21 @@ export class HttpResponse implements uWsHttpResponse {
   writeHeader(key: RecognizedString, value: RecognizedString) {
     this.response.setHeader(key.toString(), value.toString());
     return this;
+  }
+
+  pause(): void {
+    throw new Error("Not implemented");
+  }
+
+  resume(): void {
+    throw new Error("Not implemented");
+  }
+
+  endWithoutBody(
+    reportedContentLength?: number | undefined,
+    closeConnection?: boolean | undefined
+  ): HttpResponse {
+    throw new Error("Not implemented");
   }
 
   end(data: RecognizedString = "", closeConnection: boolean = false) {
